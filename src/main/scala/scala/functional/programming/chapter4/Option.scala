@@ -31,3 +31,16 @@ sealed trait Option[+A] {
 case class Some[+A](get: A) extends Option[A]
 
 case object None extends Option[Nothing]
+
+object Option {
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    a flatmap (oa => b flatmap (ob => Some(f(oa, ob))))
+  }
+
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = {
+    if (a.contains(None))
+      None
+    else
+      ???
+  }
+}
