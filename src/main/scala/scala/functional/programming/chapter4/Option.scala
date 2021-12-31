@@ -41,6 +41,6 @@ object Option {
     if (a.contains(None))
       None
     else
-      ???
+      Some(a.map { case Some(a) => a })
   }
 }
