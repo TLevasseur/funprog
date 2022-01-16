@@ -87,5 +87,6 @@ class StreamTest {
   @Test
   def testStartWith(): Unit = {
     assertTrue(Stream.from(1).startWith(Stream.from(1).take(15)))
+    assertFalse(Stream.from(1).take(3).startWith(Stream.from(1).take(15)))
   }
 }

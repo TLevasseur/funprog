@@ -90,9 +90,8 @@ sealed trait Stream[+A] {
     }
   }
 
-  //TODO make this break with that bigger than this
   def startWith[B >: A](that: Stream[B]): Boolean = {
-    this.zipWith(that, (a, b: B) => a == b).foldRight(true)(_ && _)
+    this.zipAll(that).takeWhile(_._2.isDefined).forAll { case (maybeA, maybeB) => maybeA == maybeB }
   }
 }
 
