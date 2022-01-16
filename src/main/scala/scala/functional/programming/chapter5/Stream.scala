@@ -93,6 +93,18 @@ sealed trait Stream[+A] {
   def startWith[B >: A](that: Stream[B]): Boolean = {
     this.zipAll(that).takeWhile(_._2.isDefined).forAll { case (maybeA, maybeB) => maybeA == maybeB }
   }
+
+  def tails: Stream[Stream[A]] = {
+    Stream.unfold(Some(this): Option[Stream[A]]) {
+      case Some(Empty) => Some((Empty, None))
+      case Some(Cons(h, t)) => Some((Cons(h, t), Some(t())))
+      case _ => None
+    }
+  }
+
+  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = {
+    foldRight((z, Stream.apply(z)))((a, b) => (f(a, b._1), Stream.apply(f(a, b._1)).append(b._2)))._2
+  }
 }
 
 case object Empty extends Stream[Nothing]

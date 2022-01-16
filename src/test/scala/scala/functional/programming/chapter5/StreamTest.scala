@@ -89,4 +89,14 @@ class StreamTest {
     assertTrue(Stream.from(1).startWith(Stream.from(1).take(15)))
     assertFalse(Stream.from(1).take(3).startWith(Stream.from(1).take(15)))
   }
+
+  @Test
+  def testTails(): Unit = {
+    assertEquals(List(List(1, 2, 3), List(2, 3), List(3), List()), Stream.from(1).take(3).tails.toList.map(_.toList))
+  }
+
+  @Test
+  def testScanRight(): Unit = {
+    assertEquals(List(6, 5, 3, 0), Stream.apply(1, 2, 3).scanRight(0)(_ + _).toList)
+  }
 }
