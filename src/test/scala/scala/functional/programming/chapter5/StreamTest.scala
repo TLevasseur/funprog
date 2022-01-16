@@ -64,4 +64,19 @@ class StreamTest {
     assertEquals(List(0, 1, 0, 2, 0, 3, 0, 4), s.flatMap(Stream.apply(0, _)).toList)
   }
 
+  @Test
+  def testConstant(): Unit = {
+    assertEquals(List(1, 1, 1, 1, 1), Stream.constant(1).take(5).toList)
+  }
+
+  @Test
+  def testFrom(): Unit = {
+    assertEquals(List(6, 7, 8, 9, 10), Stream.from(6).take(5).toList)
+  }
+
+  @Test
+  def testFib(): Unit = {
+    assertEquals(List(0, 1, 1, 2, 3, 5, 8), Stream.fibs().take(7).toList)
+  }
+
 }
