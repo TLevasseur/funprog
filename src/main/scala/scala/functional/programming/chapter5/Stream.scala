@@ -3,10 +3,8 @@ package scala.functional.programming.chapter5
 import scala.annotation.tailrec
 
 sealed trait Stream[+A] {
-  def headOption: Option[A] = this match {
-    case Empty => None
-    case Cons(h, _) => Some(h())
-  }
+  def headOption: Option[A] =
+    foldRight(None: Option[A])((e, _) => Some(e))
 
   def toList: List[A] = this match {
     case Empty => List()

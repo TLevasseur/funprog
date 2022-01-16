@@ -34,4 +34,10 @@ class StreamTest {
     assertFalse(s.forAll(_ < 5))
   }
 
+  @Test
+  def headTest(): Unit = {
+    assertEquals(1, Stream.apply(1, 2, 3, 4, 5).headOption.get)
+    assertFalse(Stream.apply().headOption.isDefined)
+  }
+
 }
