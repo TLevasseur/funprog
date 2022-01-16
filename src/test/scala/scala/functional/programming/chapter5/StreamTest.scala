@@ -79,4 +79,13 @@ class StreamTest {
     assertEquals(List(0, 1, 1, 2, 3, 5, 8), Stream.fibs().take(7).toList)
   }
 
+  @Test
+  def zipWith(): Unit = {
+    assertEquals(List((1, 0), (2, 1), (3, 1), (4, 2), (5, 3), (6, 5), (7, 8)), Stream.fibs().zipWith(Stream.from(1), (a, b: Int) => (b, a)).take(7).toList)
+  }
+
+  @Test
+  def testStartWith(): Unit = {
+    assertTrue(Stream.from(1).startWith(Stream.from(1).take(15)))
+  }
 }
