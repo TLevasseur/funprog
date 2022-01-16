@@ -26,4 +26,12 @@ class StreamTest {
     assertEquals(s.toList, s.takeWhile(_ => true).toList)
     assertEquals(Empty.toList, s.takeWhile(_ => false).toList)
   }
+
+  @Test
+  def testForAll(): Unit = {
+    val s = Stream.apply(1, 2, 3, 4, 5)
+    assertTrue(s.forAll(_ > 0))
+    assertFalse(s.forAll(_ < 5))
+  }
+
 }
