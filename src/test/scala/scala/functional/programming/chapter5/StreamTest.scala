@@ -40,4 +40,28 @@ class StreamTest {
     assertFalse(Stream.apply().headOption.isDefined)
   }
 
+  @Test
+  def testFilter(): Unit = {
+    val s = Stream.apply(1, 2, 3, 4, 5)
+    assertEquals(Stream.apply(1, 3, 5).toList, s.filter(_ % 2 == 1).toList)
+  }
+
+  @Test
+  def testMap(): Unit = {
+    val s = Stream.apply(1, 2, 3, 4, 5)
+    assertEquals(Stream.apply(1, 0, 1, 0, 1).toList, s.map(_ % 2).toList)
+  }
+
+  @Test
+  def testAppend(): Unit = {
+    val s = Stream.apply(1, 2, 3, 4)
+    assertEquals(Stream.apply(1, 2, 3, 4, 5).toList, s.append(Stream.apply(5)).toList)
+  }
+
+  @Test
+  def testFlatMap(): Unit = {
+    val s = Stream.apply(1, 2, 3, 4)
+    assertEquals(List(0, 1, 0, 2, 0, 3, 0, 4), s.flatMap(Stream.apply(0, _)).toList)
+  }
+
 }

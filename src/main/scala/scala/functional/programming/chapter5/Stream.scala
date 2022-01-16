@@ -1,6 +1,7 @@
 package scala.functional.programming.chapter5
 
 import scala.annotation.tailrec
+import scala.functional.programming.chapter5.Stream.cons
 
 sealed trait Stream[+A] {
   def headOption: Option[A] =
@@ -50,6 +51,25 @@ sealed trait Stream[+A] {
 
   def forAll(p: A => Boolean): Boolean = {
     foldRight(true)((a, b) => b && p(a))
+  }
+
+  def map[B](f: A => B): Stream[B] =
+    foldRight(Empty: Stream[B])((a, b) => cons(f(a), b))
+
+  def filter(f: A => Boolean): Stream[A] =
+    foldRight(Empty: Stream[A])((a, b) => {
+      if (f(a))
+        cons(a, b)
+      else
+        b
+    })
+
+  def append[B >: A](e: => Stream[B]): Stream[B] = {
+    foldRight(e)((a, b) => cons(a, b))
+  }
+
+  def flatMap[B](f: A => Stream[B]): Stream[B] = {
+    foldRight(Empty: Stream[B])((a, b) => f(a).append(b))
   }
 }
 
