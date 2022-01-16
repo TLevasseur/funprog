@@ -89,17 +89,17 @@ object Stream {
   def apply[A](as: A*): Stream[A] =
     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
 
-  def constant[A](a: A): Stream[A] = cons(a, constant(a))
+  def constant[A](a: A): Stream[A] = unfold(a)(_ => Some(a, a))
 
-  def from(n: Int): Stream[Int] = cons(n, from(n + 1))
+  def from(n: Int): Stream[Int] = unfold(n)(x => Some(x, x + 1))
 
-  def fibs(): Stream[Int] = {
-    def go(n_2: Int, n_1: Int): Stream[Int] = {
-      val n = n_1 + n_2
-      cons(n, go(n_1, n))
+  def fibs(): Stream[Int] = unfold((0, 1))(tuple => Some(tuple._1, (tuple._2, tuple._1 + tuple._2)))
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = {
+    f(z) match {
+      case None => empty
+      case Some((a, b)) => cons(a, unfold(b)(f))
     }
-
-    cons(0, cons(1, go(0, 1)))
   }
 
 }
