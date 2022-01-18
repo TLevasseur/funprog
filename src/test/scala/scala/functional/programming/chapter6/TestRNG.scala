@@ -26,7 +26,7 @@ class TestRNG {
     @scala.annotation.tailrec
     def test(rng: RNG, n: Int): Unit = {
       if (n > 0) {
-        val (d, newrng) = rng.nextDouble
+        val (d, newrng) = RNG.double(rng)
         assertTrue(d + "is not > 0", d >= 0)
         assertTrue(d + "is not < 1", d < 1)
         test(newrng, n - 1)
@@ -44,4 +44,19 @@ class TestRNG {
     assertEquals(6, list.length)
   }
 
+  @Test
+  def testNonNegativeIntLessThan6(): Unit = {
+    @scala.annotation.tailrec
+    def test(rng: RNG, n: Int): Unit = {
+      if (n > 0) {
+        val (d, newrng) = RNG.nonNegativeLessThan(6)(rng)
+        assertTrue(d + "is not > 0", d >= 0)
+        assertTrue(d + "is not < 1", d < 6)
+        test(newrng, n - 1)
+      }
+    }
+
+    val rng = SimpleRNG(12345678987654321L)
+    test(rng, 100)
+  }
 }
