@@ -3,12 +3,8 @@ package scala.functional.programming.chapter6
 import scala.functional.programming.chapter6.State.unit
 
 case class State[S, +A](run: S => (A, S)) {
-  def map[B](f: A => B): State[S, B] = {
-    State(s => {
-      val (a, s1) = run(s)
-      (f(a), s1)
-    })
-  }
+  def map[B](f: A => B): State[S, B] =
+    flatMap(a => unit(f(a)))
 
   def map2[B, C](rb: State[S, B])(f: (A, B) => C): State[S, C] =
     flatMap(a => rb.flatMap(b => unit(f(a, b))))
