@@ -88,10 +88,7 @@ object RNG {
   val randDoubleInt: Rand[(Double, Int)] = both(double, int)
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = {
-    val r: Rand[List[A]] = rng => {
-      (List(), rng)
-    }
-    fs.foldRight(r)((a, b) => map2(a, b)(_ :: _))
+    fs.foldRight(unit(List[A]()))((a, b) => map2(a, b)(_ :: _))
   }
 
   def ints(count: Int): Rand[List[Int]] = {
