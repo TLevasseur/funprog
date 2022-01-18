@@ -20,4 +20,8 @@ object State {
   def unit[S, A](a: A): State[S, A] = State(s => {
     (a, s)
   })
+
+  def sequence[S, A](fs: List[State[S, A]]): State[S, List[A]] = {
+    fs.foldRight(unit[S, List[A]](List[A]()))((a, b) => a.map2(b)(_ :: _))
+  }
 }
