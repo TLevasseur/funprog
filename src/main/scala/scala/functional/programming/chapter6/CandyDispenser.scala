@@ -22,7 +22,7 @@ object CandyDispenser {
   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = {
     val apply = inputs.map(i => { m: Machine => m.interact(i) }).reduce(_ andThen _)
     val init = { m: Machine => ((m.candies, m.coins), m) }
-    State[Machine, (Int, Int)](init compose apply)
+    State(init compose apply)
   }
 }
 
