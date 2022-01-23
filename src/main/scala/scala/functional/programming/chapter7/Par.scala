@@ -73,6 +73,13 @@ object Par {
       override def isDone: Boolean = done
     }
 
+  def fold[A, B](list: List[A])(initValue: B)(f: (A, B) => B): Par[B] = {
+    if (list.isEmpty)
+      lazyUnit(initValue)
+    else
+      map2(lazyUnit(list.head), fold(list.tail)(initValue)(f))(f)
+  }
+
   def fork[A](a: => Par[A]): Par[A] =
     es => es.submit(new Callable[A] {
       override def call(): A = a(es).get
@@ -91,4 +98,5 @@ object Par {
 
     def cancel(evenIfRunning: Boolean): Boolean = false
   }
+
 }
