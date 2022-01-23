@@ -12,7 +12,7 @@ object Par {
     lazyUnit(f(a))
 
   def sequence[A](ps: List[Par[A]]): Par[List[A]] = {
-    ???
+    ps.foldRight(unit(List()): Par[List[A]])((p, l) => map2(p, l)(_ :: _))
   }
 
 
