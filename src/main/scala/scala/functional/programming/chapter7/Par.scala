@@ -6,7 +6,7 @@ import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 object Par {
   type Par[T] = ExecutorService => Future[T]
 
-  def unit[A](a: A): Par[A] = (es: ExecutorService) => UnitFuture[A]
+  def unit[A](a: A): Par[A] = (es: ExecutorService) => UnitFuture[A](a)
 
   def async[A, B](f: A => B): A => Par[B] = a =>
     lazyUnit(f(a))
@@ -15,6 +15,36 @@ object Par {
     ps.foldRight(unit(List()): Par[List[A]])((p, l) => map2(p, l)(_ :: _))
   }
 
+  def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork {
+    val fbs = ps.map(async(f))
+    sequence(fbs)
+  }
+
+  def parFilter[A](ps: List[A])(f: A => Boolean): Par[List[A]] = {
+    val ans = ps.map(async(a => {
+      if (f(a))
+        List(a)
+      else
+        List()
+    }))
+    map(sequence(ans))(_.flatten)
+  }
+
+  def map[A, B](a: Par[A])(f: A => B): Par[B] = {
+    map2(a, unit())((a, _) => f(a))
+  }
+
+  def map3[A, B, C, D](a: Par[A], b: Par[B], c: Par[C])(f: (A, B, C) => D): Par[D] = {
+    map2(toTuple(a, b), c)((ab, c1) => f(ab._1, ab._2, c1))
+  }
+
+  def map4[A, B, C, D, E](a: Par[A], b: Par[B], c: Par[C], d: Par[D])(f: (A, B, C, D) => E): Par[E] = {
+    map2(toTuple(a, b), toTuple(c, d))((ab, cd) => f(ab._1, ab._2, cd._1, cd._2))
+  }
+
+  private def toTuple[A, B](a: Par[A], b: Par[B]): Par[(A, B)] = {
+    map2(a, b)((_, _))
+  }
 
   //TODO : make sure system nano time is what we are really looking for monitoring elapsed time
   def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
