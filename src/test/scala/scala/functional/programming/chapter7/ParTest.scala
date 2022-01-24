@@ -8,7 +8,7 @@ import org.junit.Test
 class ParTest {
 
   @Test
-  def test(): Unit = {
+  def testParagraphCount(): Unit = {
     val paragraphs = List(
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc suscipit id ipsum vel dictum. In hac habitasse platea dictumst. Interdum et malesuada fames ac ante ipsum primis in faucibus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris quis condimentum dui, a suscipit velit. Integer finibus, leo non tincidunt elementum, erat ligula aliquet erat, a ultricies sapien turpis ut lacus. In imperdiet eu libero vel maximus. Nulla sed ante velit. Praesent interdum justo ipsum, et placerat ligula auctor a. Sed blandit velit et risus convallis, eget blandit tellus lacinia.",
       "Donec finibus at purus quis posuere. Nulla tristique neque justo, hendrerit euismod arcu faucibus eu. Aenean lacinia mauris semper risus condimentum scelerisque. Duis vitae commodo tortor. Donec varius mauris a volutpat volutpat. Aenean aliquet volutpat ante ac aliquam. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam tincidunt purus dolor, ut semper purus sollicitudin eu.",
@@ -18,10 +18,16 @@ class ParTest {
     )
     val es = new ThreadPoolExecutor(0, 4, Long.MaxValue, TimeUnit.NANOSECONDS, new LinkedBlockingDeque())
     val plan = Par.sequence(paragraphs.map(lines => Par.lazyUnit(lines))
-      .map(line => Par.map(line)(_.split(" ").toList)))(es).get()
-    val count = Par.fold(plan)(0)((lines, acc) => lines.count(_ => true) + acc)(es).get
+      .map(line => Par.map(line)(_.split(" ").length)))(es).get()
+    val count = Par.reduce(plan)(_ + _)(es).get()
     assertEquals(414, count)
+  }
 
+  @Test
+  def maxIntTest(): Unit = {
+    val es = new ThreadPoolExecutor(0, 4, Long.MaxValue, TimeUnit.NANOSECONDS, new LinkedBlockingDeque())
+    val ints = List(11, 89, 64, 100, 64, 68, 45, 72, 50, 39, 75, 16, 23, 49, 98, 95, 93, 19, 53, 51, 71, 55, 39, 17, 28, 6, 22, 1, 48, 65, 11, 27, 39, 50, 68, 63, 21, 76, 19, 5, 89, 87, 37, 63, 13, 7, 5, 32, 40, 37, 96, 96, 66, 68, 59, 89, 82, 18, 73, 21, 68, 1, 55, 42, 28, 84, 97, 14, 52, 54, 21, 59, 8, 38, 65, 51, 41, 30, 46, 53, 90, 47, 15, 83, 39, 17, 12, 58, 53, 63, 24, 78, 16, 53, 26, 89, 80, 30, 72, 16)
+    assertEquals(100, Par.reduce(ints)(Integer.max)(es).get())
   }
 
 }

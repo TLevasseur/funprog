@@ -73,6 +73,15 @@ object Par {
       override def isDone: Boolean = done
     }
 
+  def reduce[A](list: List[A])(f: (A, A) => A): Par[A] = {
+    if (list.size == 1)
+      lazyUnit(list.head)
+    else {
+      val (left, right) = list.splitAt(list.size / 2)
+      map2(reduce(left)(f), reduce(right)(f))(f)
+    }
+  }
+
   def fold[A, B](list: List[A])(initValue: B)(f: (A, B) => B): Par[B] = {
     if (list.isEmpty)
       lazyUnit(initValue)
