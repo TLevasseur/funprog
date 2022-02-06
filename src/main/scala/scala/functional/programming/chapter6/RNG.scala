@@ -112,5 +112,10 @@ object RNG {
     else
       (n, tmpRng)
   }
+
+  def limit(rng: RNG, lower: Int, upper: Int): (Int, RNG) = {
+    val (n, tmpRng) = rng.nextInt
+    (((n % (lower + upper)) + (lower + upper)) % (lower + upper) + lower, tmpRng)
+  }
 }
 
