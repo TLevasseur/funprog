@@ -113,9 +113,14 @@ object RNG {
       (n, tmpRng)
   }
 
-  def limit(rng: RNG, lower: Int, upper: Int): (Int, RNG) = {
+  def boolean(rng: RNG): (Boolean, RNG) = {
     val (n, tmpRng) = rng.nextInt
-    (((n % (lower + upper)) + (lower + upper)) % (lower + upper) + lower, tmpRng)
+    (n % 2 == 1, tmpRng)
+  }
+
+  def limit(rng: RNG, lower: Int, upper: Int): (Int, RNG) = {
+    val (n, tmpRng) = RNG.nonNegativeInt(rng)
+    (lower + n % (upper - lower), tmpRng)
   }
 }
 

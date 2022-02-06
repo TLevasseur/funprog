@@ -18,6 +18,10 @@ object Gen {
 
   case class Gen[A](sample: State[RNG, A])
 
+  def unit[A](a: => A): Gen[A] = Gen(State.unit(a))
+
+  def boolean: Gen[Boolean] = Gen(State(RNG.boolean))
+
   def choose(start: Int, stopExclusive: Int): Gen[Int] = {
     Gen(State(rng => RNG.limit(rng, start, stopExclusive)))
   }
