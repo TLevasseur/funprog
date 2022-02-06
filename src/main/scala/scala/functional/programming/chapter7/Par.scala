@@ -46,7 +46,6 @@ object Par {
     map2(a, b)((_, _))
   }
 
-  //TODO : make sure system nano time is what we are really looking for monitoring elapsed time
   def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
     es => new Future[C] {
       private val fa = a(es)
