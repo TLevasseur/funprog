@@ -9,7 +9,7 @@ object Par {
     private[nonblocking] def apply(k: A => Unit): Unit
   }
 
-  type Par[+A] = ExecutorService => Future[A]
+  type Par[A] = ExecutorService => Future[A]
 
   def map[A, B](p: Par[A])(f: A => B): Par[B] =
     es => new Future[B] {
