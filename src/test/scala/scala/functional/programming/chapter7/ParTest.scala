@@ -5,6 +5,8 @@ import java.util.concurrent.{LinkedBlockingDeque, ThreadPoolExecutor, TimeUnit}
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import scala.functional.programming.chapter7.blocking.Par
+
 class ParTest {
 
   @Test

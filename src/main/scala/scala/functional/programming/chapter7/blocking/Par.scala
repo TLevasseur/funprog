@@ -1,7 +1,6 @@
-package scala.functional.programming.chapter7
+package scala.functional.programming.chapter7.blocking
 
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
-
 
 object Par {
   type Par[T] = ExecutorService => Future[T]
