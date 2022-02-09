@@ -9,15 +9,41 @@ case class Gen[A](sample: State[RNG, A]) {
   def listOfN(size: Gen[Int]): Gen[List[A]] = size flatmap (e => Gen.listOfN(e, this))
 }
 
-trait Prop {
+
+object Prop {
+  type TestCases = Int
   type SuccessCount = Int
   type FailedCase = String
 
-  def check(): Either[(FailedCase, SuccessCount), SuccessCount]
-
-  def &&(p: Prop): Prop = {
-    ???
+  sealed trait Result {
+    def isFalsified: Boolean
   }
+
+  case object Passed extends Result {
+    override def isFalsified: Boolean = false
+  }
+
+  case class Falsified(failure: FailedCase,
+                       successes: SuccessCount) extends Result {
+    override def isFalsified: Boolean = true
+  }
+
+  case class Prop(run: (TestCases, RNG) => Result) {
+    def &&(p: Prop): Prop = Prop((t: TestCases, rng: RNG) => {
+      this.run(t, rng) match {
+        case Passed => p.run(t, rng)
+        case Falsified(failure, successes) => Falsified(failure, successes)
+      }
+    })
+
+    def ||(p: Prop): Prop = Prop((t: TestCases, rng: RNG) => {
+      this.run(t, rng) match {
+        case Falsified(_, _) => p.run(t, rng)
+        case Passed => Passed
+      }
+    })
+  }
+
 }
 
 object Gen {
