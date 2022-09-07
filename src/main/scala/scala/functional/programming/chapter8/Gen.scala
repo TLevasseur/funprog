@@ -18,7 +18,7 @@ object Gen {
   def unit[A](a: => A): Gen[A] = Gen(State.unit(a))
 
   def choose(start: Int, stopExclusive: Int): Gen[Int] = {
-    Gen(State(RNG.double).map(start + _ * (stopExclusive - start)).map(_.toInt))
+    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive-start)))
   }
 
   def boolean: Gen[Boolean] = {
@@ -26,17 +26,7 @@ object Gen {
   }
 
   def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] = {
-    @tailrec
-    def helper(l: List[A], n: Int, g: Gen[A])(rng: RNG): (List[A], RNG) = {
-      if (n == 0)
-        (l, rng)
-      else {
-        val (x, newGen) = g.sample.run(rng)
-        helper(l :+ x, n - 1, g)(newGen)
-      }
-    }
-
-    Gen(State(helper(List(), n, g)))
+    Gen(State.sequence(List.fill(n)(g.sample)))
   }
 }
 
