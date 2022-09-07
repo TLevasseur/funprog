@@ -1,6 +1,5 @@
 package scala.functional.programming.chapter8
 
-import scala.annotation.tailrec
 import scala.functional.programming.chapter6.{RNG, State}
 
 
@@ -18,7 +17,7 @@ object Gen {
   def unit[A](a: => A): Gen[A] = Gen(State.unit(a))
 
   def choose(start: Int, stopExclusive: Int): Gen[Int] = {
-    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive-start)))
+    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive - start)))
   }
 
   def boolean: Gen[Boolean] = {
@@ -31,9 +30,11 @@ object Gen {
 }
 
 case class Gen[+A](sample: State[RNG, A]) {
-  def map[A, B](f: A => B): Gen[B] = ???
+  def map[B](f: A => B): Gen[B] = Gen(sample.map(f))
 
-  def flatMap[A, B](f: A => Gen[B]): Gen[B] = ???
+  def flatMap[B](f: A => Gen[B]): Gen[B] = {
+    Gen(sample.map(f).flatMap(_.sample))
+  }
 }
 
 trait SGen[+A] {
