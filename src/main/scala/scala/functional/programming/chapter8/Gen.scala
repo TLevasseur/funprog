@@ -1,16 +1,47 @@
 package scala.functional.programming.chapter8
 
 import scala.functional.programming.chapter6.{RNG, State}
+import scala.functional.programming.chapter8.Prop._
 
-
-case class Prop(check: Boolean) {
-  def &&(other: Prop): Prop = {
-    new Prop(check && other.check)
-  }
-}
 
 object Prop {
+  type SuccessCount = Int
+  type TestCases = Int
+  type MaxSize = Int
+  type FailedCase = String
+
+  sealed trait Result {
+    def isFalsified: Boolean
+  }
+
+  case object Passed extends Result {
+    def isFalsified: Boolean = false
+  }
+
+  case class Falsified(failure: FailedCase,
+                       successes: SuccessCount) extends Result {
+    override def isFalsified: Boolean = true
+  }
+
   def forAll[A](gen: Gen[A])(f: A => Boolean): Prop = ???
+}
+
+case class Prop(run: (MaxSize, TestCases, RNG) => Result) {
+  def &&(other: Prop): Prop = {
+    Prop((max: Int, n: Int, rng: RNG) =>
+      run(max, n, rng) match {
+        case Passed => other.run(max, n, rng)
+        case _ => _
+      })
+  }
+
+  def ||(other: Prop): Prop = {
+    Prop((max: Int, n: Int, rng: RNG) =>
+      run(max, n, rng) match {
+        case Falsified(_,_) => other.run(max, n, rng)
+        case _ => _
+      })
+  }
 }
 
 object Gen {
