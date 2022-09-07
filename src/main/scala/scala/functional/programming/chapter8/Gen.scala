@@ -1,10 +1,11 @@
 package scala.functional.programming.chapter8
 
 import scala.functional.programming.chapter6.{RNG, State}
+import scala.functional.programming.chapter8.Prop.Prop
 
 case class Gen[A](sample: State[RNG, A]) {
 
-  def flatmap[B](f: A => Gen[B]): Gen[B] = f(this.sample)
+  def flatmap[B](f: A => Gen[B]): Gen[B] = Gen(sample.map(f).flatMap(_.sample))
 
   def listOfN(size: Gen[Int]): Gen[List[A]] = size flatmap (e => Gen.listOfN(e, this))
 }
